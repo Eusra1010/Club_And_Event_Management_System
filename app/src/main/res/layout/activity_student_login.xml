@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#708A92">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="STUDENT LOGIN"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center"
+            android:layout_marginBottom="40dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Student Roll / ID"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+
+        <EditText
+            android:id="@+id/studentRoll"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Enter roll or ID"
+            android:background="@null"
+            android:inputType="text"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#F2F2F2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="20dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Club"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+
+        <AutoCompleteTextView
+            android:id="@+id/studentClub"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Select club"
+            android:background="@null"
+            android:inputType="none"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:drawableEnd="@android:drawable/arrow_down_float"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#F2F2F2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="20dp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:endIconMode="password_toggle"
+            app:boxBackgroundMode="none"
+            app:endIconTint="#FFFFFF">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:hint="Password"
+                android:inputType="text|textPassword"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#F2F2F2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="40dp"/>
+
+
+
+        <Button
+            android:id="@+id/studentLoginBtn"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="LOGIN"
+            android:textColor="#042A36"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</ScrollView>
