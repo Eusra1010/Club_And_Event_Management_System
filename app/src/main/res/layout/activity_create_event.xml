@@ -10,129 +10,15 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="28dp"
-            android:text="Register Event"
+            android:text="Create Event"
             android:textColor="#FFFFFF"
             android:textSize="26sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Full Name"
-            android:background="#FFFFFF"
-            android:padding="6dp"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/etFullName"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter full name"
-            android:background="@null"
-            android:inputType="textPersonName"
-            android:autofillHints="name"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#F2F2F2"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginBottom="20dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email Address"
-            android:background="#FFFFFF"
-            android:padding="6dp"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter email"
-            android:background="@null"
-            android:inputType="textEmailAddress"
-            android:autofillHints="emailAddress"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#F2F2F2"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginBottom="20dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Batch"
-            android:background="#FFFFFF"
-            android:padding="6dp"
-            android:textColor="#000000" />
-
-        <AutoCompleteTextView
-            android:id="@+id/actvBatch"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Select batch"
-            android:background="@null"
-            android:inputType="none"
-            android:importantForAutofill="no"
-            android:drawableEnd="@android:drawable/arrow_down_float"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#F2F2F2"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginBottom="20dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Department"
-            android:background="#FFFFFF"
-            android:padding="6dp"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/etDepartment"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter department"
-            android:background="@null"
-            android:inputType="textCapWords"
-            android:autofillHints="organizationName"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#F2F2F2"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_marginBottom="20dp" />
-
 
         <TextView
             android:layout_width="wrap_content"
@@ -142,15 +28,66 @@
             android:padding="6dp"
             android:textColor="#000000" />
 
-        <AutoCompleteTextView
-            android:id="@+id/actvEventName"
+        <EditText
+            android:id="@+id/etEventName"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Select event"
+            android:hint="Enter event name"
             android:background="@null"
-            android:inputType="none"
-            android:importantForAutofill="no"
-            android:drawableEnd="@android:drawable/arrow_down_float"
+            android:inputType="textPersonName"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#F2F2F2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event Date"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+        <EditText
+            android:id="@+id/etEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Select date"
+            android:background="@null"
+            android:focusable="false"
+            android:clickable="true"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#F2F2F2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Venue"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+        <EditText
+            android:id="@+id/etVenue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Enter venue"
+            android:background="@null"
+            android:inputType="textPostalAddress"
             android:textColor="#FFFFFF"
             android:textColorHint="#F2F2F2"
             android:paddingTop="10dp"
@@ -170,31 +107,30 @@
             android:padding="6dp"
             android:textColor="#000000" />
 
-        <AutoCompleteTextView
-            android:id="@+id/actvClub"
+        <EditText
+            android:id="@+id/etClubName"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Select club"
+            android:hint="Auto-filled"
             android:background="@null"
-            android:inputType="none"
-            android:importantForAutofill="no"
-            android:drawableEnd="@android:drawable/arrow_down_float"
+            android:enabled="false"
             android:textColor="#FFFFFF"
             android:textColorHint="#F2F2F2"
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#000000"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="24dp" />
 
         <Button
-            android:id="@+id/btnRegisterEvent"
+            android:id="@+id/btnCreateEvent"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:backgroundTint="#FFFFFF"
-            android:text="Register Event"
+            android:text="Create Event"
             android:textColor="#042A36"
             android:textSize="18sp" />
 

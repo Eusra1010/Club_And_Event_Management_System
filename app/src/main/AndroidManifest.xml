@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.eventmanagement">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:supportsRtl="true"
@@ -49,6 +51,9 @@
         <activity
             android:name=".RegisterEventActivity"
             android:exported="false" />
+        <activity
+            android:name=".CreateEventActivity" />
+
 
     </application>
 
