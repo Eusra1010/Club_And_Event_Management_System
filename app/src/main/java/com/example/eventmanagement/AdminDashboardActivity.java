@@ -13,10 +13,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
     LinearLayout btnCreateEvent, btnManageEvents, btnViewRegistrations, btnAnnouncements;
     Button btnLogout;
 
+    String clubName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
+
+        clubName = getIntent().getStringExtra("clubName");
 
         btnCreateEvent = findViewById(R.id.cardCreateEvent);
         btnManageEvents = findViewById(R.id.cardManageEvents);
@@ -25,24 +29,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnAdminLogout);
 
         btnCreateEvent.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this, CreateEventActivity.class);
+            Intent intent = new Intent(
+                    AdminDashboardActivity.this,
+                    CreateEventActivity.class
+            );
+            intent.putExtra("clubName", clubName);
             startActivity(intent);
         });
 
-        btnManageEvents.setOnClickListener(v ->
-                showNotImplemented()
-        );
-
-        btnViewRegistrations.setOnClickListener(v ->
-                showNotImplemented()
-        );
-
-        btnAnnouncements.setOnClickListener(v ->
-                showNotImplemented()
-        );
+        btnManageEvents.setOnClickListener(v -> showNotImplemented());
+        btnViewRegistrations.setOnClickListener(v -> showNotImplemented());
+        btnAnnouncements.setOnClickListener(v -> showNotImplemented());
 
         btnLogout.setOnClickListener(v -> {
-            startActivity(new Intent(AdminDashboardActivity.this, MainActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         });
     }

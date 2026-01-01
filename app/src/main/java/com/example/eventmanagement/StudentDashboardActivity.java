@@ -45,6 +45,15 @@ public class StudentDashboardActivity extends AppCompatActivity {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
+        btnViewEvents = findViewById(R.id.cardViewEvents);
+
+        btnViewEvents.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    StudentDashboardActivity.this,
+                    ViewEventsActivity.class
+            ));
+        });
+
     }
 
     private void showNotImplemented() {

@@ -5,7 +5,7 @@
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="already_have_account">Already have an account?</string>
-
+    <string name="upcoming_events">Upcoming Events</string>
     <string name="register_event">Register Event</string>
     <string name="full_name">Full Name</string>
     <string name="roll">Roll</string>

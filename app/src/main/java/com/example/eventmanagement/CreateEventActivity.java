@@ -37,8 +37,12 @@ public class CreateEventActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Events");
 
-        etEventDate.setOnClickListener(v -> showDatePicker());
+        String clubName = getIntent().getStringExtra("clubName");
+        if (clubName != null) {
+            etClubName.setText(clubName);
+        }
 
+        etEventDate.setOnClickListener(v -> showDatePicker());
         btnCreateEvent.setOnClickListener(v -> createEvent());
     }
 
