@@ -176,12 +176,12 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_margin="20dp"
+        android:backgroundTint="#0A3F45"
         android:text="Logout"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:backgroundTint="#FF1744"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

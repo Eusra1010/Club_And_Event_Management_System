@@ -1,61 +1,95 @@
 package com.example.eventmanagement;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class StudentDashboardActivity extends AppCompatActivity {
 
-    LinearLayout btnViewEvents, btnRegisterEvent, btnMyBookings, btnAnnouncements;
-    Button btnLogout;
+    RecyclerView rvEvents;
+    TextView btnNotification, btnHome, tvViewAll;
+    LinearLayout cardMyRegistrations;
+
+    DatabaseReference eventRef;
+    ArrayList<Event> eventList;
+    EventAdapter eventAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_dashboard);
 
-        btnViewEvents = findViewById(R.id.cardViewEvents);
-        btnRegisterEvent = findViewById(R.id.cardRegisterEvent);
-        btnMyBookings = findViewById(R.id.cardMyBookings);
-        btnAnnouncements = findViewById(R.id.cardAnnouncements);
+        rvEvents = findViewById(R.id.rvEvents);
+        btnNotification = findViewById(R.id.btnNotification);
+        btnHome = findViewById(R.id.btnHome);
+        tvViewAll = findViewById(R.id.tvViewAll);
+        cardMyRegistrations = findViewById(R.id.cardMyRegistrations);
 
-        btnLogout = findViewById(R.id.btnStudentLogout);
-
-        btnRegisterEvent.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterEventActivity.class))
+        rvEvents.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         );
 
-        btnViewEvents.setOnClickListener(v ->
-                showNotImplemented()
-        );
+        eventList = new ArrayList<>();
+        eventAdapter = new EventAdapter(this, eventList);
+        rvEvents.setAdapter(eventAdapter);
 
-        btnMyBookings.setOnClickListener(v ->
-                showNotImplemented()
-        );
+        eventRef = FirebaseDatabase.getInstance().getReference("Events");
 
-        btnAnnouncements.setOnClickListener(v ->
-                showNotImplemented()
-        );
+        eventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventList.clear();
+                int count = 0;
 
-        btnLogout.setOnClickListener(v -> {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (count == 8) break;
+
+                    Event event = child.getValue(Event.class);
+                    if (event != null) {
+                        eventList.add(event);
+                        count++;
+                    }
+                }
+                eventAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+        btnHome.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
-        btnViewEvents = findViewById(R.id.cardViewEvents);
 
-        btnViewEvents.setOnClickListener(v -> {
-            startActivity(new Intent(
-                    StudentDashboardActivity.this,
-                    ViewEventsActivity.class
-            ));
-        });
+        btnNotification.setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationActivity.class))
+        );
 
-    }
+        cardMyRegistrations.setOnClickListener(v ->
+                startActivity(new Intent(this, MyRegistrationsActivity.class))
+        );
 
-    private void showNotImplemented() {
+        tvViewAll.setOnClickListener(v ->
+                startActivity(new Intent(
+                        StudentDashboardActivity.this,
+                        ViewEventsActivity.class
+                ))
+        );
     }
 }

@@ -55,6 +55,8 @@
             android:name=".CreateEventActivity" />
         <activity
             android:name=".ViewEventsActivity" />
+        <activity android:name=".ManageEventsActivity" />
+
 
     </application>
 

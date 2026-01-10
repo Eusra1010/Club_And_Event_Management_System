@@ -7,114 +7,145 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
 public class RegisterEventActivity extends AppCompatActivity {
 
-    EditText etFullName, etEmail, etDepartment, etClub;
-    AutoCompleteTextView actvBatch, actvEventName, actvClub;
+    EditText etFullName, etEmail, etDepartment, etEventName, etClubName;
+    AutoCompleteTextView actvBatch;
     Button btnRegisterEvent;
 
-    DatabaseReference databaseReference;
+    DatabaseReference eventsRef, registrationsRef;
+
+    String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_event);
 
+        eventId = getIntent().getStringExtra("eventId");
+        String eventName = getIntent().getStringExtra("eventName");
+        String clubName = getIntent().getStringExtra("clubName");
+
+        if (eventId == null || eventName == null || clubName == null) {
+            Toast.makeText(this, "Invalid event", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
         etDepartment = findViewById(R.id.etDepartment);
-
-
         actvBatch = findViewById(R.id.actvBatch);
-        actvEventName = findViewById(R.id.actvEventName);
-        actvClub = findViewById(R.id.actvClub);
-
-
+        etEventName = findViewById(R.id.etEventName);
+        etClubName = findViewById(R.id.etClubName);
         btnRegisterEvent = findViewById(R.id.btnRegisterEvent);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("EventRegistrations");
+        etEventName.setText(eventName);
+        etClubName.setText(clubName);
+        etEventName.setEnabled(false);
+        etClubName.setEnabled(false);
 
         setupBatchDropdown();
-        setupEventDropdown();
-        setupClubDropdown();
 
+        eventsRef = FirebaseDatabase.getInstance().getReference("Events");
+        registrationsRef = FirebaseDatabase.getInstance().getReference("EventRegistrations");
 
-
-        actvBatch.setOnClickListener(v -> actvBatch.showDropDown());
-        actvEventName.setOnClickListener(v -> actvEventName.showDropDown());
-        actvClub.setOnClickListener(v -> actvClub.showDropDown());
-
-
-        btnRegisterEvent.setOnClickListener(v -> registerEvent());
-    }
-
-    private void setupClubDropdown() {
-        String[] events = {"Computer Club", "Debating Club", "Robotics Club", "Sports Club"};
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, events);
-        actvClub.setAdapter(adapter);
-        actvClub.setThreshold(0);
+        btnRegisterEvent.setOnClickListener(v -> register());
     }
 
     private void setupBatchDropdown() {
         String[] batches = {"2K20", "2K21", "2K22", "2K23", "2K24"};
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, batches);
+                new ArrayAdapter<>(this,
+                        android.R.layout.simple_dropdown_item_1line,
+                        batches);
         actvBatch.setAdapter(adapter);
-        actvBatch.setThreshold(0);
+        actvBatch.setOnClickListener(v -> actvBatch.showDropDown());
     }
 
-    private void setupEventDropdown() {
-        String[] events = {"Tech Fest", "Cultural Night", "Workshop", "Seminar"};
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, events);
-        actvEventName.setAdapter(adapter);
-        actvEventName.setThreshold(0);
-    }
+    private void register() {
 
-
-    private void registerEvent() {
         String fullName = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
-        String batch = actvBatch.getText().toString().trim();
         String department = etDepartment.getText().toString().trim();
-        String eventName = actvEventName.getText().toString().trim();
-        String club = actvClub.getText().toString().trim();
+        String batch = actvBatch.getText().toString().trim();
 
-        if (fullName.isEmpty() || email.isEmpty() || batch.isEmpty()
-                || department.isEmpty() || eventName.isEmpty()) {
-
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        if (fullName.isEmpty() || email.isEmpty() || department.isEmpty() || batch.isEmpty()) {
+            Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String registrationId = databaseReference.push().getKey();
-        if (registrationId == null) {
-            Toast.makeText(this, "Failed to generate registration id", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        String studentKey = email.replace(".", "_");
 
-        HashMap<String, String> data = new HashMap<>();
-        data.put("fullName", fullName);
-        data.put("email", email);
-        data.put("batch", batch);
-        data.put("department", department);
-        data.put("eventName", eventName);
-        data.put("club", club);
+        eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-        databaseReference.child(registrationId).setValue(data)
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "Event Registered Successfully", Toast.LENGTH_SHORT).show()
-                )
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                Boolean open = snapshot.child("registrationOpen").getValue(Boolean.class);
+                if (open == null || !open) {
+                    Toast.makeText(RegisterEventActivity.this,
+                            "Registration is closed", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                registrationsRef.child(eventId)
+                        .child(studentKey)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snap) {
+
+                                if (snap.exists()) {
+                                    Toast.makeText(RegisterEventActivity.this,
+                                            "Already registered", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
+                                HashMap<String, Object> data = new HashMap<>();
+                                data.put("fullName", fullName);
+                                data.put("email", email);
+                                data.put("department", department);
+                                data.put("batch", batch);
+
+                                registrationsRef.child(eventId)
+                                        .child(studentKey)
+                                        .setValue(data)
+                                        .addOnSuccessListener(unused -> {
+
+                                            Integer count = snapshot
+                                                    .child("registrationCount")
+                                                    .getValue(Integer.class);
+
+                                            if (count == null) count = 0;
+
+                                            eventsRef.child(eventId)
+                                                    .child("registrationCount")
+                                                    .setValue(count + 1);
+
+                                            Toast.makeText(RegisterEventActivity.this,
+                                                    "Registered successfully",
+                                                    Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 }

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="STUDENT REGISTRATION"
+            android:text="STUDENT SIGN UP"
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -112,7 +112,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:text="Complete Registration"
+            android:text="Sign Up"
             android:textSize="18sp"
             android:textColor="#042A36"
             android:backgroundTint="#FFFFFF"/>

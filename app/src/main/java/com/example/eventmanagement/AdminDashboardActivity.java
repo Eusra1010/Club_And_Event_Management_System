@@ -4,15 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    LinearLayout btnCreateEvent, btnManageEvents, btnViewRegistrations, btnAnnouncements;
+    LinearLayout btnCreateEvent, btnManageEvents;
     Button btnLogout;
-
     String clubName;
 
     @Override
@@ -24,30 +22,23 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         btnCreateEvent = findViewById(R.id.cardCreateEvent);
         btnManageEvents = findViewById(R.id.cardManageEvents);
-        btnViewRegistrations = findViewById(R.id.cardViewRegistrations);
-        btnAnnouncements = findViewById(R.id.cardAdminAnnouncements);
         btnLogout = findViewById(R.id.btnAdminLogout);
 
         btnCreateEvent.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    AdminDashboardActivity.this,
-                    CreateEventActivity.class
-            );
+            Intent intent = new Intent(this, CreateEventActivity.class);
             intent.putExtra("clubName", clubName);
             startActivity(intent);
         });
 
-        btnManageEvents.setOnClickListener(v -> showNotImplemented());
-        btnViewRegistrations.setOnClickListener(v -> showNotImplemented());
-        btnAnnouncements.setOnClickListener(v -> showNotImplemented());
+        btnManageEvents.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ManageEventsActivity.class);
+            intent.putExtra("clubName", clubName);
+            startActivity(intent);
+        });
 
         btnLogout.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
-    }
-
-    private void showNotImplemented() {
-        Toast.makeText(this, "Feature coming soon", Toast.LENGTH_SHORT).show();
     }
 }
