@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    EditText etEventName, etEventDate, etVenue, etClubName, etFees;
+    EditText etEventName, etEventDate, etVenue, etClubName, etFees, etDeadline;
     Button btnCreateEvent;
 
     DatabaseReference databaseReference;
@@ -34,36 +34,35 @@ public class CreateEventActivity extends AppCompatActivity {
         etVenue = findViewById(R.id.etVenue);
         etClubName = findViewById(R.id.etClubName);
         etFees = findViewById(R.id.etFees);
+        etDeadline = findViewById(R.id.etDeadline);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Events");
 
         String clubName = getIntent().getStringExtra("clubName");
-        if (clubName != null) {
-            etClubName.setText(clubName);
-        }
+        if (clubName != null) etClubName.setText(clubName);
 
-        etEventDate.setOnClickListener(v -> showDatePicker());
+        etEventDate.setOnClickListener(v -> showDatePicker(etEventDate));
+        etDeadline.setOnClickListener(v -> showDatePicker(etDeadline));
+
         btnCreateEvent.setOnClickListener(v -> createEvent());
     }
 
-    private void showDatePicker() {
+    private void showDatePicker(EditText target) {
         Calendar calendar = Calendar.getInstance();
 
-        DatePickerDialog dialog = new DatePickerDialog(
+        new DatePickerDialog(
                 this,
                 (view, y, m, d) -> {
                     String date = y + "-"
                             + String.format("%02d", m + 1) + "-"
                             + String.format("%02d", d);
-                    etEventDate.setText(date);
+                    target.setText(date);
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        dialog.show();
+        ).show();
     }
 
     private void createEvent() {
@@ -73,51 +72,40 @@ public class CreateEventActivity extends AppCompatActivity {
         String venue = etVenue.getText().toString().trim();
         String clubName = etClubName.getText().toString().trim();
         String fees = etFees.getText().toString().trim();
+        String deadline = etDeadline.getText().toString().trim();
 
         if (fees.isEmpty()) fees = "0";
 
-        if (eventName.isEmpty() || eventDate.isEmpty() || venue.isEmpty()) {
-            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
+        if (eventName.isEmpty() || eventDate.isEmpty() || venue.isEmpty() || deadline.isEmpty()) {
+            Toast.makeText(this, "Fill all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        checkDateAndSuggestWeekend(eventDate, eventName, venue, clubName, fees);
+        checkDateAndSave(eventDate, eventName, venue, clubName, fees, deadline);
     }
 
-    private void checkDateAndSuggestWeekend(String date,
-                                            String eventName,
-                                            String venue,
-                                            String clubName,
-                                            String fees) {
+    private void checkDateAndSave(String date,
+                                  String eventName,
+                                  String venue,
+                                  String clubName,
+                                  String fees,
+                                  String deadline) {
 
-        databaseReference
-                .orderByChild("eventDate")
+        databaseReference.orderByChild("eventDate")
                 .equalTo(date)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-
                         if (!snapshot.exists()) {
-                            saveEvent(date, eventName, venue, clubName, fees);
-                            return;
+                            saveEvent(date, eventName, venue, clubName, fees, deadline);
+                        } else {
+                            Toast.makeText(
+                                    CreateEventActivity.this,
+                                    "Date booked. Choose another date",
+                                    Toast.LENGTH_LONG
+                            ).show();
                         }
-
-                        Calendar cal = Calendar.getInstance();
-                        String[] parts = date.split("-");
-                        cal.set(
-                                Integer.parseInt(parts[0]),
-                                Integer.parseInt(parts[1]) - 1,
-                                Integer.parseInt(parts[2])
-                        );
-
-                        String suggestedDate = findNextAvailableWeekend(cal);
-
-                        Toast.makeText(
-                                CreateEventActivity.this,
-                                "Date booked. Suggested available date: " + suggestedDate,
-                                Toast.LENGTH_LONG
-                        ).show();
                     }
 
                     @Override
@@ -129,26 +117,12 @@ public class CreateEventActivity extends AppCompatActivity {
                 });
     }
 
-    private String findNextAvailableWeekend(Calendar cal) {
-
-        for (int i = 0; i < 30; i++) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            int day = cal.get(Calendar.DAY_OF_WEEK);
-
-            if (day == Calendar.FRIDAY || day == Calendar.SATURDAY) {
-                return cal.get(Calendar.YEAR) + "-"
-                        + String.format("%02d", cal.get(Calendar.MONTH) + 1) + "-"
-                        + String.format("%02d", cal.get(Calendar.DAY_OF_MONTH));
-            }
-        }
-        return "No available Friday/Saturday found";
-    }
-
     private void saveEvent(String date,
                            String eventName,
                            String venue,
                            String clubName,
-                           String fees) {
+                           String fees,
+                           String deadline) {
 
         String eventId = databaseReference.push().getKey();
 
@@ -161,6 +135,8 @@ public class CreateEventActivity extends AppCompatActivity {
         eventData.put("fees", fees);
         eventData.put("registrationOpen", true);
         eventData.put("registrationCount", 0);
+        eventData.put("status", "ACTIVE");
+        eventData.put("registrationDeadline", deadline);
 
         databaseReference.child(eventId)
                 .setValue(eventData)

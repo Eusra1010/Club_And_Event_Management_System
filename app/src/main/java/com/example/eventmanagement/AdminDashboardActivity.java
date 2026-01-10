@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    LinearLayout btnCreateEvent, btnManageEvents;
+    LinearLayout btnCreateEvent, btnManageEvents, btnViewRegistrations;
     Button btnLogout;
     String clubName;
 
@@ -22,6 +22,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         btnCreateEvent = findViewById(R.id.cardCreateEvent);
         btnManageEvents = findViewById(R.id.cardManageEvents);
+        btnViewRegistrations = findViewById(R.id.cardViewRegistrations);
         btnLogout = findViewById(R.id.btnAdminLogout);
 
         btnCreateEvent.setOnClickListener(v -> {
@@ -33,6 +34,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
         btnManageEvents.setOnClickListener(v -> {
             Intent intent = new Intent(this, ManageEventsActivity.class);
             intent.putExtra("clubName", clubName);
+            startActivity(intent);
+        });
+
+
+        btnViewRegistrations.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ViewRegistrationsActivity.class);
             startActivity(intent);
         });
 

@@ -47,6 +47,32 @@
             android:layout_height="1dp"
             android:background="#000000"
             android:layout_marginBottom="20dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact Number"
+            android:background="#FFFFFF"
+            android:padding="6dp"
+            android:textColor="#000000" />
+
+        <EditText
+            android:id="@+id/etContactNo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Enter contact no"
+            android:background="@null"
+            android:inputType="textPersonName"
+            android:autofillHints="name"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#F2F2F2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000"
+            android:layout_marginBottom="20dp" />
 
 
         <TextView

@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 public class RegisterEventActivity extends AppCompatActivity {
 
-    EditText etFullName, etEmail, etDepartment, etEventName, etClubName;
+    EditText etFullName, etEmail, etDepartment, etEventName, etClubName, etContactNo;
     AutoCompleteTextView actvBatch;
     Button btnRegisterEvent;
 
@@ -32,7 +32,6 @@ public class RegisterEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_event);
-
         eventId = getIntent().getStringExtra("eventId");
         String eventName = getIntent().getStringExtra("eventName");
         String clubName = getIntent().getStringExtra("clubName");
@@ -43,13 +42,16 @@ public class RegisterEventActivity extends AppCompatActivity {
             return;
         }
 
+
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
+        etContactNo = findViewById(R.id.etContactNo);
         etDepartment = findViewById(R.id.etDepartment);
         actvBatch = findViewById(R.id.actvBatch);
         etEventName = findViewById(R.id.etEventName);
         etClubName = findViewById(R.id.etClubName);
         btnRegisterEvent = findViewById(R.id.btnRegisterEvent);
+
 
         etEventName.setText(eventName);
         etClubName.setText(clubName);
@@ -57,6 +59,7 @@ public class RegisterEventActivity extends AppCompatActivity {
         etClubName.setEnabled(false);
 
         setupBatchDropdown();
+
 
         eventsRef = FirebaseDatabase.getInstance().getReference("Events");
         registrationsRef = FirebaseDatabase.getInstance().getReference("EventRegistrations");
@@ -78,74 +81,74 @@ public class RegisterEventActivity extends AppCompatActivity {
 
         String fullName = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
+        String contactNo = etContactNo.getText().toString().trim();
         String department = etDepartment.getText().toString().trim();
         String batch = actvBatch.getText().toString().trim();
 
-        if (fullName.isEmpty() || email.isEmpty() || department.isEmpty() || batch.isEmpty()) {
+        if (fullName.isEmpty() || email.isEmpty() ||
+                contactNo.isEmpty() || department.isEmpty() || batch.isEmpty()) {
             Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String studentKey = email.replace(".", "_");
 
-        eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                Boolean open = snapshot.child("registrationOpen").getValue(Boolean.class);
-                if (open == null || !open) {
-                    Toast.makeText(RegisterEventActivity.this,
-                            "Registration is closed", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        eventsRef.child(eventId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                registrationsRef.child(eventId)
-                        .child(studentKey)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snap) {
+                        Boolean open = snapshot.child("registrationOpen")
+                                .getValue(Boolean.class);
 
-                                if (snap.exists()) {
-                                    Toast.makeText(RegisterEventActivity.this,
-                                            "Already registered", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
+                        if (open == null || !open) {
+                            Toast.makeText(RegisterEventActivity.this,
+                                    "Registration is closed", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                                HashMap<String, Object> data = new HashMap<>();
-                                data.put("fullName", fullName);
-                                data.put("email", email);
-                                data.put("department", department);
-                                data.put("batch", batch);
 
-                                registrationsRef.child(eventId)
-                                        .child(studentKey)
-                                        .setValue(data)
-                                        .addOnSuccessListener(unused -> {
+                        registrationsRef.child(eventId)
+                                .child(studentKey)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snap) {
 
-                                            Integer count = snapshot
-                                                    .child("registrationCount")
-                                                    .getValue(Integer.class);
-
-                                            if (count == null) count = 0;
-
-                                            eventsRef.child(eventId)
-                                                    .child("registrationCount")
-                                                    .setValue(count + 1);
-
+                                        if (snap.exists()) {
                                             Toast.makeText(RegisterEventActivity.this,
-                                                    "Registered successfully",
-                                                    Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        });
-                            }
+                                                    "Already registered", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-            }
+                                        HashMap<String, Object> data = new HashMap<>();
+                                        data.put("fullName", fullName);
+                                        data.put("email", email);
+                                        data.put("contactNo", contactNo);
+                                        data.put("department", department);
+                                        data.put("batch", batch);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
+                                        registrationsRef.child(eventId)
+                                                .child(studentKey)
+                                                .setValue(data)
+                                                .addOnSuccessListener(unused -> {
+
+                                                    Toast.makeText(
+                                                            RegisterEventActivity.this,
+                                                            "Registration successful",
+                                                            Toast.LENGTH_LONG
+                                                    ).show();
+                                                    finish();
+                                                });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {}
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 }

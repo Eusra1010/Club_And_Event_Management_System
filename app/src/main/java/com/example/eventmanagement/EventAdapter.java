@@ -12,7 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
@@ -42,11 +46,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
 
+        Event event = eventList.get(position);
+
         holder.cardRoot.setBackgroundResource(
                 cardColors[position % cardColors.length]
         );
-
-        Event event = eventList.get(position);
 
         holder.tvEventName.setText(event.getEventName());
         holder.tvClubName.setText("Organized by " + event.getClubName());
@@ -60,13 +64,52 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.tvFees.setText("Fee: ৳" + fees);
         }
 
-        holder.btnRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(context, RegisterEventActivity.class);
-            intent.putExtra("eventId", event.getEventId());
-            intent.putExtra("eventName", event.getEventName());
-            intent.putExtra("clubName", event.getClubName());
-            context.startActivity(intent);
-        });
+        String status = event.getStatus();
+        boolean registrationOpen = event.isRegistrationOpen();
+        String deadline = event.getRegistrationDeadline();
+
+        boolean deadlinePassed = isDeadlinePassed(deadline);
+
+        // ---- DEADLINE TEXT ----
+        if (deadline != null && !deadline.isEmpty()) {
+            holder.tvDeadline.setText("Register by: " + deadline);
+        } else {
+            holder.tvDeadline.setText("");
+        }
+
+        // ---- REGISTER BUTTON LOGIC ----
+        if ("CANCELLED".equalsIgnoreCase(status)) {
+            holder.btnRegister.setEnabled(false);
+            holder.btnRegister.setText("Cancelled");
+        }
+        else if (!registrationOpen || deadlinePassed) {
+            holder.btnRegister.setEnabled(false);
+            holder.btnRegister.setText("Closed");
+        }
+        else {
+            holder.btnRegister.setEnabled(true);
+            holder.btnRegister.setText("Register");
+            holder.btnRegister.setOnClickListener(v -> {
+                Intent intent = new Intent(context, RegisterEventActivity.class);
+                intent.putExtra("eventId", event.getEventId());
+                intent.putExtra("eventName", event.getEventName());
+                intent.putExtra("clubName", event.getClubName());
+                context.startActivity(intent);
+            });
+        }
+    }
+
+    private boolean isDeadlinePassed(String deadline) {
+        if (deadline == null || deadline.isEmpty()) return false;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date deadlineDate = sdf.parse(deadline);
+            Date today = new Date();
+            return deadlineDate != null && today.after(deadlineDate);
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
     @Override
@@ -77,7 +120,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     static class EventViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout cardRoot;
-        TextView tvEventName, tvClubName, tvDate, tvVenue, tvFees;
+        TextView tvEventName, tvClubName, tvDate, tvVenue, tvFees, tvDeadline;
         Button btnRegister;
 
         public EventViewHolder(@NonNull View itemView) {
@@ -88,6 +131,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvDate = itemView.findViewById(R.id.tvDate);
             tvVenue = itemView.findViewById(R.id.tvVenue);
             tvFees = itemView.findViewById(R.id.tvFees);
+            tvDeadline = itemView.findViewById(R.id.tvDeadline);
             btnRegister = itemView.findViewById(R.id.btnRegister);
         }
     }

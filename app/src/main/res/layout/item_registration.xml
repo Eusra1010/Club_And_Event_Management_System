@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tvStudentName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Student Name"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"/>
+
+
+    <TextView
+        android:id="@+id/tvStudentEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email:student@email.com"
+        android:textSize="13sp"
+        android:textColor="#CCFFFFFF"
+        android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:id="@+id/tvStudentContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact: 01XXXXXXXXX"
+        android:textSize="13sp"
+        android:textColor="#CCFFFFFF"
+        android:layout_marginTop="2dp"/>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#33FFFFFF"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>

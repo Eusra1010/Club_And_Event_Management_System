@@ -12,6 +12,8 @@ public class Event {
     private String status;
     private boolean registrationOpen;
     private int registrationCount;
+    private String registrationDeadline;
+
 
     public Event() {
     }
@@ -47,6 +49,9 @@ public class Event {
     public int getRegistrationCount() {
         return registrationCount;
     }
+    public String getRegistrationDeadline() {
+        return registrationDeadline;
+    }
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
@@ -67,6 +72,14 @@ public class Event {
     public void setClubName(String clubName) {
         this.clubName = clubName;
     }
+    public void setFees(String fees) {
+        this.fees = fees;
+    }
+
+    public void setRegistrationDeadline(String registrationDeadline) {
+        this.registrationDeadline = registrationDeadline;
+    }
+
     public String getFees() {
         return fees;
     }

@@ -49,6 +49,7 @@ public class ManageEventsActivity extends AppCompatActivity {
 
         if (clubName == null || clubName.trim().isEmpty()) {
             Toast.makeText(this, "Club not found", Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
 
@@ -63,9 +64,7 @@ public class ManageEventsActivity extends AppCompatActivity {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             Event event = child.getValue(Event.class);
                             if (event != null) {
-                                if (event.getEventId() == null || event.getEventId().trim().isEmpty()) {
-                                    event.setEventId(child.getKey());
-                                }
+                                event.setEventId(child.getKey()); // ✅ ALWAYS SET ID
                                 eventList.add(event);
                             }
                         }
@@ -75,7 +74,11 @@ public class ManageEventsActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ManageEventsActivity.this, "Failed to load events", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                ManageEventsActivity.this,
+                                "Failed to load events",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
                 });
     }
