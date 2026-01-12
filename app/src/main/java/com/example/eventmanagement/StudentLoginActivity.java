@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -46,41 +47,40 @@ public class StudentLoginActivity extends AppCompatActivity {
             return;
         }
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(roll)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
+                        if (!snapshot.exists()) {
+                            Toast.makeText(StudentLoginActivity.this,
+                                    "Student not found", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                for (DataSnapshot child : snapshot.getChildren()) {
+                        String dbPassword = snapshot.child("password").getValue(String.class);
 
-                    String dbRoll = child.child("roll").getValue(String.class);
-                    String dbPassword = child.child("password").getValue(String.class);
+                        if (password.equals(dbPassword)) {
 
-                    if (roll.equals(dbRoll) && password.equals(dbPassword)) {
+                            Intent intent = new Intent(
+                                    StudentLoginActivity.this,
+                                    StudentDashboardActivity.class
+                            );
+                            intent.putExtra("studentKey", roll);
+                            startActivity(intent);
+                            finish();
 
-                        Toast.makeText(StudentLoginActivity.this,
-                                "Login Successful", Toast.LENGTH_SHORT).show();
-
-                        startActivity(new Intent(
-                                StudentLoginActivity.this,
-                                StudentDashboardActivity.class
-                        ));
-                        finish();
-                        return;
+                        } else {
+                            Toast.makeText(StudentLoginActivity.this,
+                                    "Wrong password", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
 
-                Toast.makeText(StudentLoginActivity.this,
-                        "Invalid roll or password",
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(StudentLoginActivity.this,
-                        "Database error",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(StudentLoginActivity.this,
+                                "Database error", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

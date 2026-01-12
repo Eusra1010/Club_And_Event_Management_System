@@ -1,5 +1,6 @@
 package com.example.eventmanagement;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -25,23 +26,26 @@ public class RegisterEventActivity extends AppCompatActivity {
     Button btnRegisterEvent;
 
     DatabaseReference eventsRef, registrationsRef;
-
     String eventId;
+    String studentKey;   // 🔑 ROLL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_event);
+
         eventId = getIntent().getStringExtra("eventId");
         String eventName = getIntent().getStringExtra("eventName");
         String clubName = getIntent().getStringExtra("clubName");
 
-        if (eventId == null || eventName == null || clubName == null) {
-            Toast.makeText(this, "Invalid event", Toast.LENGTH_SHORT).show();
+
+        studentKey = getIntent().getStringExtra("studentKey");
+
+        if (eventId == null || eventName == null || clubName == null || studentKey == null) {
+            Toast.makeText(this, "Invalid event/session", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-
 
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
@@ -52,14 +56,12 @@ public class RegisterEventActivity extends AppCompatActivity {
         etClubName = findViewById(R.id.etClubName);
         btnRegisterEvent = findViewById(R.id.btnRegisterEvent);
 
-
         etEventName.setText(eventName);
         etClubName.setText(clubName);
         etEventName.setEnabled(false);
         etClubName.setEnabled(false);
 
         setupBatchDropdown();
-
 
         eventsRef = FirebaseDatabase.getInstance().getReference("Events");
         registrationsRef = FirebaseDatabase.getInstance().getReference("EventRegistrations");
@@ -91,9 +93,6 @@ public class RegisterEventActivity extends AppCompatActivity {
             return;
         }
 
-        String studentKey = email.replace(".", "_");
-
-
         eventsRef.child(eventId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -108,9 +107,8 @@ public class RegisterEventActivity extends AppCompatActivity {
                             return;
                         }
 
-
                         registrationsRef.child(eventId)
-                                .child(studentKey)
+                                .child(studentKey)   // 🔥 USE ROLL
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snap) {
@@ -129,10 +127,9 @@ public class RegisterEventActivity extends AppCompatActivity {
                                         data.put("batch", batch);
 
                                         registrationsRef.child(eventId)
-                                                .child(studentKey)
+                                                .child(studentKey)   // 🔥 USE ROLL
                                                 .setValue(data)
                                                 .addOnSuccessListener(unused -> {
-
                                                     Toast.makeText(
                                                             RegisterEventActivity.this,
                                                             "Registration successful",
@@ -142,13 +139,11 @@ public class RegisterEventActivity extends AppCompatActivity {
                                                 });
                                     }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {}
+                                    @Override public void onCancelled(@NonNull DatabaseError error) {}
                                 });
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
     }
 }

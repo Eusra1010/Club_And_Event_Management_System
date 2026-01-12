@@ -29,10 +29,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     Context context;
     List<Event> eventList;
+    String studentKey;   // 🔑 ROLL
 
-    public EventAdapter(Context context, List<Event> eventList) {
+    // 🔥 UPDATED CONSTRUCTOR
+    public EventAdapter(Context context, List<Event> eventList, String studentKey) {
         this.context = context;
         this.eventList = eventList;
+        this.studentKey = studentKey;
     }
 
     @NonNull
@@ -70,14 +73,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         boolean deadlinePassed = isDeadlinePassed(deadline);
 
-        // ---- DEADLINE TEXT ----
-        if (deadline != null && !deadline.isEmpty()) {
-            holder.tvDeadline.setText("Register by: " + deadline);
-        } else {
-            holder.tvDeadline.setText("");
-        }
-
-        // ---- REGISTER BUTTON LOGIC ----
         if ("CANCELLED".equalsIgnoreCase(status)) {
             holder.btnRegister.setEnabled(false);
             holder.btnRegister.setText("Cancelled");
@@ -90,10 +85,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.btnRegister.setEnabled(true);
             holder.btnRegister.setText("Register");
             holder.btnRegister.setOnClickListener(v -> {
+
                 Intent intent = new Intent(context, RegisterEventActivity.class);
                 intent.putExtra("eventId", event.getEventId());
                 intent.putExtra("eventName", event.getEventName());
                 intent.putExtra("clubName", event.getClubName());
+
+                // 🔑 PASS STUDENT KEY (CRITICAL)
+                intent.putExtra("studentKey", studentKey);
+
                 context.startActivity(intent);
             });
         }

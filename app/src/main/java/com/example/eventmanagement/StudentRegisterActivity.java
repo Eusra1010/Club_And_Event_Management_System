@@ -36,6 +36,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
     }
 
     private void registerStudent() {
+
         String fullName = etFullName.getText().toString().trim();
         String roll = etRoll.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -45,20 +46,15 @@ public class StudentRegisterActivity extends AppCompatActivity {
             return;
         }
 
-        String id = databaseReference.push().getKey();
-        if (id == null) {
-            Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         HashMap<String, String> data = new HashMap<>();
         data.put("fullName", fullName);
         data.put("roll", roll);
         data.put("password", password);
 
-        databaseReference.child(id).setValue(data)
+        databaseReference.child(roll)
+                .setValue(data)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Registration Successful", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Sign up Successful", Toast.LENGTH_LONG).show();
                     finish();
                 })
                 .addOnFailureListener(e ->

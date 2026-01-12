@@ -2,8 +2,12 @@ package com.example.eventmanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,30 +25,49 @@ import java.util.ArrayList;
 public class StudentDashboardActivity extends AppCompatActivity {
 
     RecyclerView rvEvents;
-    TextView btnNotification, btnHome, tvViewAll;
+    TextView btnHome, tvViewAll, tvBadgeCount;
+    ImageView btnNotifications;
     LinearLayout cardMyRegistrations;
 
     DatabaseReference eventRef;
     ArrayList<Event> eventList;
     EventAdapter eventAdapter;
 
+    String studentKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_dashboard);
 
+        // 🔑 SESSION
+        studentKey = getIntent().getStringExtra("studentKey");
+
+        if (studentKey == null || studentKey.isEmpty()) {
+            Toast.makeText(this,
+                    "Session expired. Please login again.",
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        Log.d("DASH", "studentKey=" + studentKey);
+
+        // UI
         rvEvents = findViewById(R.id.rvEvents);
-        btnNotification = findViewById(R.id.btnNotification);
         btnHome = findViewById(R.id.btnHome);
+        btnNotifications = findViewById(R.id.btnNotifications);
         tvViewAll = findViewById(R.id.tvViewAll);
         cardMyRegistrations = findViewById(R.id.cardMyRegistrations);
+        tvBadgeCount = findViewById(R.id.tvBadgeCount);
 
+        // EVENTS (HORIZONTAL)
         rvEvents.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         );
 
         eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(this, eventList);
+        eventAdapter = new EventAdapter(this, eventList, studentKey);
         rvEvents.setAdapter(eventAdapter);
 
         eventRef = FirebaseDatabase.getInstance().getReference("Events");
@@ -55,41 +78,73 @@ public class StudentDashboardActivity extends AppCompatActivity {
                 eventList.clear();
                 int count = 0;
 
-                for (DataSnapshot child : snapshot.getChildren()) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
                     if (count == 8) break;
-
-                    Event event = child.getValue(Event.class);
-                    if (event != null) {
-                        eventList.add(event);
+                    Event e = ds.getValue(Event.class);
+                    if (e != null) {
+                        eventList.add(e);
                         count++;
                     }
                 }
                 eventAdapter.notifyDataSetChanged();
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
+
+
+        listenForUnreadNotifications();
+
 
         btnHome.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
 
-        btnNotification.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationActivity.class))
-        );
 
-        cardMyRegistrations.setOnClickListener(v ->
-                startActivity(new Intent(this, MyRegistrationsActivity.class))
-        );
+        btnNotifications.setOnClickListener(v -> {
+            Intent i = new Intent(this, StudentNotificationsActivity.class);
+            i.putExtra("studentKey", studentKey);
+            startActivity(i);
+        });
 
-        tvViewAll.setOnClickListener(v ->
-                startActivity(new Intent(
-                        StudentDashboardActivity.this,
-                        ViewEventsActivity.class
-                ))
-        );
+        // VIEW ALL EVENTS
+        tvViewAll.setOnClickListener(v -> {
+            Intent i = new Intent(this, ViewEventsActivity.class);
+            i.putExtra("studentKey", studentKey);
+            startActivity(i);
+        });
+
+        // MY REGISTRATIONS
+        cardMyRegistrations.setOnClickListener(v -> {
+            Intent i = new Intent(this, MyRegistrationsActivity.class);
+            i.putExtra("studentKey", studentKey);
+            startActivity(i);
+        });
+    }
+
+    private void listenForUnreadNotifications() {
+
+        FirebaseDatabase.getInstance()
+                .getReference("Notifications")
+                .child(studentKey)
+                .orderByChild("read")
+                .equalTo(false)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        int count = (int) snapshot.getChildrenCount();
+
+                        if (count > 0) {
+                            tvBadgeCount.setText(String.valueOf(count));
+                            tvBadgeCount.setVisibility(View.VISIBLE);
+                        } else {
+                            tvBadgeCount.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                });
     }
 }

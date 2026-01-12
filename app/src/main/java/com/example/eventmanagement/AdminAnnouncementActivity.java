@@ -118,9 +118,10 @@ public class AdminAnnouncementActivity extends AppCompatActivity {
                             String studentKey = ds.getKey();
 
                             HashMap<String, Object> notif = new HashMap<>();
-                            notif.put("eventId", eventId);
-                            notif.put("type", type);
+                            notif.put("title", title);
                             notif.put("message", message);
+                            notif.put("type", type);
+                            notif.put("eventId", eventId);
                             notif.put("timestamp", time);
                             notif.put("read", false);
 
